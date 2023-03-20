@@ -11,5 +11,5 @@ forge install
 
 forge build
 
-forge test
+forge test -vv
 ```
