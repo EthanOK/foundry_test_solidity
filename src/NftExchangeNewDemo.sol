@@ -208,7 +208,15 @@ contract NftExchangeNewDemo is Ownable, ReentrancyGuard, ExchangeDomain {
         payable(account).transfer(address(this).balance);
     }
 
-    function prepareMessage(Order memory order) public view returns (bytes32) {
+    function prepareMessage(Order memory order) public pure returns (bytes32) {
         return keccak256(abi.encode(order));
+    }
+
+    function royaltyFeeMessage(
+        Order memory order,
+        uint256 royaltyFee,
+        uint256 endTime
+    ) public pure returns (bytes32) {
+        return keccak256(abi.encode(order, royaltyFee, endTime));
     }
 }

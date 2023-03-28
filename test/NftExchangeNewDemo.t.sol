@@ -5,11 +5,11 @@ import "forge-std/Test.sol";
 import "../src/NftExchangeNewDemo.sol";
 
 contract NftExchangeNewDemoTest is Test, NftExchangeNewDemo {
-    NftExchangeNewDemo public exchange;
+    NftExchangeNewDemo public nftexchange;
     Order order;
 
     function setUp() public {
-        exchange = new NftExchangeNewDemo();
+        nftexchange = new NftExchangeNewDemo();
         order.key.owner = 0x6278A1E803A76796a3A1f7F6344fE874ebfe94B2;
         order
             .key
@@ -30,12 +30,19 @@ contract NftExchangeNewDemoTest is Test, NftExchangeNewDemo {
     }
 
     function testFee() public {
-        console.log(exchange.FEE_10000());
-        assertEq(exchange.FEE_10000(), 10000);
+        console.log(nftexchange.FEE_10000());
+        assertEq(nftexchange.FEE_10000(), 10000);
     }
 
     function testOrderHash() public {
         bytes32 hash = prepareMessage(order);
+        assertEq(hash, "");
+    }
+
+    // royaltyFeeMessage
+    function testRoyaltyFeeHash() public {
+        uint256 endtime = 1682647043;
+        bytes32 hash = royaltyFeeMessage(order, 250, endtime);
         assertEq(hash, "");
     }
 }
