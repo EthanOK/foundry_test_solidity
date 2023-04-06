@@ -45,7 +45,7 @@ contract YgmeStakingTest is Test, ERC721Holder, YgmeStakingDomain {
         //   msg.sender: 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38
     }
 
-    function testGetMyTokens() public {
+    function testGetMyTokens() public view {
         address account = address(this);
         uint256 a = _erc20.balanceOf(account);
         uint256 b = _erc20.totalSupply();
