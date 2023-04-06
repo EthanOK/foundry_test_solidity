@@ -12,4 +12,8 @@ forge install
 forge build
 
 forge test -vv
+
+forge test --match-path test/YgmeStaking.t.sol -vvv
+
+forge test --gas-report
 ```

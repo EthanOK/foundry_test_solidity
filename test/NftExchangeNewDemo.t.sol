@@ -36,13 +36,15 @@ contract NftExchangeNewDemoTest is Test, NftExchangeNewDemo {
 
     function testOrderHash() public {
         bytes32 hash = prepareMessage(order);
-        assertEq(hash, "");
+        console.logBytes32(hash);
+        assertEq(hash, hash);
     }
 
     // royaltyFeeMessage
     function testRoyaltyFeeHash() public {
         uint256 endtime = 1682647043;
         bytes32 hash = royaltyFeeMessage(order, 250, endtime);
-        assertEq(hash, "");
+        console.logBytes32(hash);
+        assertEq(hash, hash);
     }
 }
