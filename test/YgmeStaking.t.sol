@@ -26,6 +26,9 @@ contract YgmeStakingTest is Test, ERC721Holder {
         );
         _ygme.setApprovalForAll(address(ygmeStaking), true);
         _erc20.approve(address(ygmeStaking), _erc20.totalSupply());
+
+        vm.prank(msg.sender);
+        _ygme.setApprovalForAll(address(ygmeStaking), true);
     }
 
     function testPrint() public view {
@@ -50,7 +53,7 @@ contract YgmeStakingTest is Test, ERC721Holder {
         assertEq(a, b);
 
         uint256 amount = _ygme.balanceOf(account);
-        console.log("this balanceOf:", amount);
+        console.log("nft balanceOf:", amount);
     }
 
     function testStaking() public {
@@ -63,17 +66,49 @@ contract YgmeStakingTest is Test, ERC721Holder {
         assertEq(ygmeStaking.accountTotal(), 1);
         assertEq(ygmeStaking.ygmeTotal(), 3);
 
-        uint256 amount = _ygme.balanceOf(account);
-        console.log("this balanceOf:", amount);
         uint256[] memory stakingamount = ygmeStaking.getStakingTokenIds(
             account
         );
         assertEq(tokenIds, stakingamount);
-        console.log("stakingamount length:", stakingamount.length);
+
+        _ygme.safeTransferFrom(account, msg.sender, 7);
+
+        vm.prank(msg.sender);
+        uint256[] memory tokenIds_ = new uint256[](1);
+        tokenIds_[0] = 7;
+        ygmeStaking.staking(tokenIds_, 120);
+
+        console.log("ygmeTotal:", ygmeStaking.ygmeTotal());
+
+        console.log("accountTotal:", ygmeStaking.accountTotal());
     }
 
     function testUnStake() public {
         // address account = address(this);
+        uint256[] memory tokenIds = new uint256[](2);
+        tokenIds[0] = 1;
+        tokenIds[1] = 3;
+
+        // set block.timestamp
+        vm.warp(100);
+
+        testStaking();
+
+        vm.warp(160);
+
+        ygmeStaking.unStake(tokenIds);
+        console.log("```````````unStake````````````");
+        console.log("ygmeTotal:", ygmeStaking.ygmeTotal());
+
+        console.log("accountTotal:", ygmeStaking.accountTotal());
+    }
+
+    function testFailStakingInvalidOwner() public {
+        // invalid owner
+        address account = address(this);
+
+        _ygme.safeTransferFrom(account, msg.sender, 1);
+
         uint256[] memory tokenIds = new uint256[](3);
         tokenIds[0] = 1;
         tokenIds[1] = 3;
@@ -81,16 +116,9 @@ contract YgmeStakingTest is Test, ERC721Holder {
 
         // set block.timestamp
         vm.warp(100);
-
+        // ownerOf(1) = 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38(msg.sender)
+        // now: this call ygmeStaking
         ygmeStaking.staking(tokenIds, 60);
-
-        console.log("ygmeTotal:", ygmeStaking.ygmeTotal());
-
-        vm.warp(160);
-
-        ygmeStaking.unStake(tokenIds);
-
-        console.log("ygmeTotal:", ygmeStaking.ygmeTotal());
     }
 
     function testFailUnStake() public {
