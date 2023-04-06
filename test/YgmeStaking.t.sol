@@ -7,12 +7,12 @@ import "../src/Nft.sol";
 import "../src/USDT.sol";
 import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 
-contract YgmeStakingTest is Test, ERC721Holder {
+contract YgmeStakingTest is Test, ERC721Holder, YgmeStakingDomain {
     YgmeStaking ygmeStaking;
 
     IERC721 _ygme;
     IERC20 _erc20;
-    address _withdrawSigner = address(0);
+    address _withdrawSigner = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
     uint64[3] _periods = [uint64(60), uint64(120), uint64(360)];
 
     function setUp() public {
@@ -25,7 +25,8 @@ contract YgmeStakingTest is Test, ERC721Holder {
             [uint64(60), 120, 360]
         );
         _ygme.setApprovalForAll(address(ygmeStaking), true);
-        _erc20.approve(address(ygmeStaking), _erc20.totalSupply());
+
+        _erc20.transfer(address(ygmeStaking), _erc20.totalSupply() / 2);
 
         vm.prank(msg.sender);
         _ygme.setApprovalForAll(address(ygmeStaking), true);
@@ -50,7 +51,7 @@ contract YgmeStakingTest is Test, ERC721Holder {
         uint256 b = _erc20.totalSupply();
 
         console.log("usdt totalSupply:", b);
-        assertEq(a, b);
+        console.log("usdt balanceOf:", a);
 
         uint256 amount = _ygme.balanceOf(account);
         console.log("nft balanceOf:", amount);
@@ -149,5 +150,54 @@ contract YgmeStakingTest is Test, ERC721Holder {
         tokenIds[1] = 3;
         tokenIds[2] = 5;
         ygmeStaking.staking(tokenIds, 100);
+    }
+
+    function testWithdrawERC20() public {
+        uint256 orderId = 1;
+        address account = address(1);
+        uint256 amount = 100000000;
+        string memory random = "rweeftgreyhbn";
+        bytes
+            memory signature = hex"9959871139ad6a761b8bd21273d81573d115d8ad86b226a943f2dac0172af8d956a4ededd58f32adda35357ca61e75cb065e3580f2d2738143900ceb97bea18a1b";
+        bytes memory data = abi.encode(orderId, account, amount, random);
+        console.logBytes(data);
+        bytes32 hash = getHash(data);
+        console.log("Hash");
+        console.logBytes32(hash);
+        Sig memory sig;
+        (sig.r, sig.s, sig.v) = signatureToRSV(signature);
+
+        console.log(_erc20.balanceOf(address(ygmeStaking)));
+
+        vm.prank(account);
+        ygmeStaking.withdrawERC20(data, sig);
+
+        console.log(_erc20.balanceOf(address(ygmeStaking)));
+        console.log(_erc20.balanceOf(account));
+    }
+
+    function getHash(bytes memory data) internal pure returns (bytes32) {
+        return keccak256(data);
+    }
+
+    function signatureToRSV(
+        bytes memory signature
+    ) internal pure returns (bytes32 r, bytes32 s, uint8 v) {
+        require(signature.length == 65, "Invalid signature length");
+
+        assembly {
+            // First 32 bytes are the signature length
+            r := mload(add(signature, 32))
+            s := mload(add(signature, 64))
+            v := byte(0, mload(add(signature, 96)))
+        }
+
+        if (v < 27) {
+            v += 27;
+        }
+
+        require(v == 27 || v == 28, "Invalid signature value");
+
+        return (r, s, v);
     }
 }

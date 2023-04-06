@@ -105,12 +105,12 @@ contract YgmeStaking is
         stakingPeriods = _periods;
     }
 
-    function pause() external onlyOwner {
-        _pause();
-    }
-
-    function unpause() external onlyOwner {
-        _unpause();
+    function setPause() external onlyOwner {
+        if (!paused()) {
+            _pause();
+        } else {
+            _unpause();
+        }
     }
 
     function setStakingPeriods(uint64[3] calldata _periods) external onlyOwner {
@@ -284,7 +284,7 @@ contract YgmeStaking is
 
         orderIsInvalid[orderId] = true;
 
-        erc20.safeTransferFrom(address(this), account, amount);
+        erc20.safeTransfer(account, amount);
 
         emit WithdrawERC20(orderId, address(erc20), account, amount, random);
 
