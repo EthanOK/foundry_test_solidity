@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 abstract contract YgmeStakingDomain {
     struct StakingData {
@@ -15,16 +16,6 @@ abstract contract YgmeStakingDomain {
         bool stakedState;
         uint128 startTime;
         uint128 endTime;
-    }
-
-    /* An ECDSA signature. */
-    struct Sig {
-        /* v parameter */
-        uint8 v;
-        /* r parameter */
-        bytes32 r;
-        /* s parameter */
-        bytes32 s;
     }
 
     // Multi Call
@@ -38,24 +29,11 @@ abstract contract YgmeStakingDomain {
         uint256 indexed tokenId,
         address indexed nftContract,
         uint256 startTime,
-        uint256 endTime
+        uint256 endTime,
+        uint256 pledgeType
     );
 
-    event UnStake(
-        address indexed account,
-        uint256 indexed tokenId,
-        address indexed nftContract,
-        uint256 startTime,
-        uint256 real_endTime
-    );
-
-    event WithdrawERC20(
-        uint256 orderId,
-        address erc20,
-        address account,
-        uint256 amount,
-        string random
-    );
+    event WithdrawERC20(uint256 orderId, address account, uint256 amount);
 }
 
 contract YgmeStaking is
@@ -66,6 +44,7 @@ contract YgmeStaking is
     ReentrancyGuard
 {
     using SafeERC20 for IERC20;
+    using ECDSA for bytes32;
 
     modifier onlyOperator() {
         require(operator[_msgSender()], "not operator");
@@ -74,9 +53,9 @@ contract YgmeStaking is
 
     uint64[3] private stakingPeriods;
 
-    IERC721 public ygme;
+    IERC721 public immutable ygme;
 
-    IERC20 public erc20;
+    IERC20 public immutable ygio;
 
     address private withdrawSigner;
 
@@ -92,17 +71,12 @@ contract YgmeStaking is
 
     uint128 public ygmeTotal;
 
-    // TODO: _periods [30 days, 90 days, 180 days] 1 days = 86400 s
-    constructor(
-        address _ygme,
-        address _erc20,
-        address _withdrawSigner,
-        uint64[3] memory _periods
-    ) {
+    // TODO: _periods
+    constructor(address _ygme, address _ygio, address _withdrawSigner) {
         ygme = IERC721(_ygme);
-        erc20 = IERC20(_erc20);
+        ygio = IERC20(_ygio);
         withdrawSigner = _withdrawSigner;
-        stakingPeriods = _periods;
+        stakingPeriods = [60, 120, 360];
     }
 
     function setPause() external onlyOwner {
@@ -196,7 +170,8 @@ contract YgmeStaking is
                 _tokenId,
                 address(ygme),
                 _data.startTime,
-                _data.endTime
+                _data.endTime,
+                1
             );
         }
 
@@ -239,12 +214,13 @@ contract YgmeStaking is
                 }
             }
 
-            emit UnStake(
+            emit Staking(
                 _account,
                 _tokenId,
                 address(ygme),
                 _data.startTime,
-                block.timestamp
+                block.timestamp,
+                2
             );
 
             delete stakingDatas[_tokenId];
@@ -263,20 +239,18 @@ contract YgmeStaking is
 
     function withdrawERC20(
         bytes calldata data,
-        Sig calldata sig
+        bytes calldata signature
     ) external nonReentrant returns (bool) {
         require(data.length > 0, "invalid data");
 
         bytes32 hash = keccak256(data);
 
-        _verifySignature(hash, sig);
+        _verifySignature(hash, signature);
 
-        (
-            uint256 orderId,
-            address account,
-            uint256 amount,
-            string memory random
-        ) = abi.decode(data, (uint256, address, uint256, string));
+        (uint256 orderId, address account, uint256 amount) = abi.decode(
+            data,
+            (uint256, address, uint256)
+        );
 
         require(!orderIsInvalid[orderId], "invalid orderId");
 
@@ -284,28 +258,22 @@ contract YgmeStaking is
 
         orderIsInvalid[orderId] = true;
 
-        erc20.safeTransfer(account, amount);
+        ygio.safeTransfer(account, amount);
 
-        emit WithdrawERC20(orderId, address(erc20), account, amount, random);
+        emit WithdrawERC20(orderId, account, amount);
 
         return true;
     }
 
-    function _verifySignature(bytes32 hash, Sig calldata sig) internal view {
-        hash = _toEthSignedMessageHash(hash);
+    function _verifySignature(
+        bytes32 hash,
+        bytes calldata signature
+    ) internal view {
+        hash = hash.toEthSignedMessageHash();
 
-        address signer = ecrecover(hash, sig.v, sig.r, sig.s);
+        address signer = hash.recover(signature);
 
         require(signer == withdrawSigner, "invalid signature");
-    }
-
-    function _toEthSignedMessageHash(
-        bytes32 hash
-    ) internal pure returns (bytes32) {
-        return
-            keccak256(
-                abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
-            );
     }
 
     function aggregateStaticCall(

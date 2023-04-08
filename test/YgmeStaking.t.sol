@@ -21,8 +21,7 @@ contract YgmeStakingTest is Test, ERC721Holder, YgmeStakingDomain {
         ygmeStaking = new YgmeStaking(
             address(_ygme),
             address(_erc20),
-            _withdrawSigner,
-            [uint64(60), 120, 360]
+            _withdrawSigner
         );
         _ygme.setApprovalForAll(address(ygmeStaking), true);
 
@@ -156,21 +155,20 @@ contract YgmeStakingTest is Test, ERC721Holder, YgmeStakingDomain {
         uint256 orderId = 1;
         address account = address(1);
         uint256 amount = 100000000;
-        string memory random = "rweeftgreyhbn";
-        bytes
-            memory signature = hex"9959871139ad6a761b8bd21273d81573d115d8ad86b226a943f2dac0172af8d956a4ededd58f32adda35357ca61e75cb065e3580f2d2738143900ceb97bea18a1b";
-        bytes memory data = abi.encode(orderId, account, amount, random);
-        console.logBytes(data);
+
+        bytes memory data = abi.encode(orderId, account, amount);
+        // console.logBytes(data);
         bytes32 hash = getHash(data);
-        console.log("Hash");
+        console.log("Hash:");
+        // remix sign hash
         console.logBytes32(hash);
-        Sig memory sig;
-        (sig.r, sig.s, sig.v) = signatureToRSV(signature);
+        bytes
+            memory signature = hex"b7942a22a5214483017d7dd3132e374369a03bd70530120b6b56495b7ee1a23b3cb3d26e4f797efc98d3cc252fe1bfa4ca663915bb4ffa67c4efb833f3ae3b3a1c";
 
         console.log(_erc20.balanceOf(address(ygmeStaking)));
 
         vm.prank(account);
-        ygmeStaking.withdrawERC20(data, sig);
+        ygmeStaking.withdrawERC20(data, signature);
 
         console.log(_erc20.balanceOf(address(ygmeStaking)));
         console.log(_erc20.balanceOf(account));
