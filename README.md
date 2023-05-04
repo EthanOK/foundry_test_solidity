@@ -58,6 +58,8 @@ forge test --match-contract CalldataAndMemoryTest --gas-report
 
 ### 3. use Bitmap
 
+uint8 二进制表示为 00000000，其中每一位有 0、1 两种情况，我们默认为 1 时则为 true，0 为 false，此时可以达到将 bool 值以位的形式来进行管理。
+
 **Testing**
 
 ```
@@ -66,9 +68,9 @@ forge test --match-contract BitmapTest --gas-report
 
 **Gas report**
 
-| Function Name       | Gas Cost |
-| ------------------- | -------- |
-| **writeByCalldata** | 67905 ✅ |
-| writeByMemory       | 68456    |
+| Function Name         | Gas Cost |
+| --------------------- | -------- |
+| **setDataWithBitmap** | 22366 ✅ |
+| setDataWithBoolArray  | 35729    |
 
-1. 结合实际情况下，建议优先使用 calldata 进行变量写入。
+1. 结合实际情况下，建议优先使用 位运算符 进行部分变量管理。

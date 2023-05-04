@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 contract Bitmap {
-    bool[10] implementationWithBool;
+    bool[8] implementationWithBool;
     uint8 implementationWithBitmap;
 
     function setDataWithBoolArray(bool[8] memory data) external {
@@ -19,6 +19,14 @@ contract Bitmap {
 
     function readWithBitmap(uint indexFromRight) external returns (bool) {
         uint256 bitAtIndex = implementationWithBitmap & (1 << indexFromRight);
+        return bitAtIndex > 0;
+    }
+
+    function readWithBitmapFromLeft(
+        uint indexFromLeft
+    ) external returns (bool) {
+        uint256 bitAtIndex = implementationWithBitmap &
+            (1 << (8 - 1 - indexFromLeft));
         return bitAtIndex > 0;
     }
 }
