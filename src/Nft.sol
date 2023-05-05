@@ -3,9 +3,9 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-contract Nft is ERC721 {
+contract NFT is ERC721 {
     uint256 tokenCount;
-    uint256 public constant MAX_total = 1000;
+    uint256 public constant MAX_total = 10000;
     address public owner;
     string public constant baseURI =
         "ipfs://QmeSjSinHpPnmXmspMjwiXyN6zS4E9zccariGR3jxcaWtq/";

@@ -1,0 +1,35 @@
+{
+  "transactions": [
+    {
+      "hash": "0x8c4ad3962ef8a548d40b3bb3e24367daa2a4ce7af66aca2713c9a10350f3798a",
+      "transactionType": "CREATE",
+      "contractName": "Counter",
+      "contractAddress": "0xC9B105dD7dF027052b31a5b6d63DA4159781a5aA",
+      "function": null,
+      "arguments": null,
+      "rpc": "https://eth-goerli.g.alchemy.com/v2/83yL2qXH68vnTkzzida15zCVNGZCy1JO",
+      "transaction": {
+        "type": "0x02",
+        "from": "0x6278a1e803a76796a3a1f7f6344fe874ebfe94b2",
+        "gas": "0x21dee",
+        "value": "0x0",
+        "data": "0x608060405234801561001057600080fd5b5060f78061001f6000396000f3fe6080604052348015600f57600080fd5b5060043610603c5760003560e01c80633fb5c1cb1460415780638381f58a146053578063d09de08a14606d575b600080fd5b6051604c3660046083565b600055565b005b605b60005481565b60405190815260200160405180910390f35b6051600080549080607c83609b565b9190505550565b600060208284031215609457600080fd5b5035919050565b60006001820160ba57634e487b7160e01b600052601160045260246000fd5b506001019056fea26469706673582212201cb3b7da8a05ae6494f12190ee6ea4a5ffb21d50c4eb55b7e5157d24739a35b564736f6c63430008110033",
+        "nonce": "0x18b",
+        "accessList": []
+      },
+      "additionalContracts": [],
+      "isFixedGasLimit": false
+    }
+  ],
+  "receipts": [],
+  "libraries": [],
+  "pending": [
+    "0x8c4ad3962ef8a548d40b3bb3e24367daa2a4ce7af66aca2713c9a10350f3798a"
+  ],
+  "path": "E:/SolidityCode/foundry_demo/broadcast\\Counter.s.sol\\5\\run-latest.json",
+  "returns": {},
+  "timestamp": 1683256281,
+  "chain": 5,
+  "multi": false,
+  "commit": "8a287f2"
+}

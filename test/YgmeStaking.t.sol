@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 import "forge-std/console.sol";
 import "forge-std/Test.sol";
 import "../src/YgmeStaking.sol";
-import "../src/Nft.sol";
+import "../src/NFT.sol";
 import "../src/USDT.sol";
 import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 
@@ -16,7 +16,7 @@ contract YgmeStakingTest is Test, ERC721Holder, YgmeStakingDomain {
     uint64[3] _periods = [uint64(60), uint64(120), uint64(360)];
 
     function setUp() public {
-        _ygme = new Nft("YGME", "YGME");
+        _ygme = new NFT("YGME", "YGME");
         _erc20 = new USDT();
         ygmeStaking = new YgmeStaking(
             address(_ygme),
