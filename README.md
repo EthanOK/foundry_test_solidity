@@ -117,3 +117,37 @@ forge test --match-contract ErrorTest --gas-report
 1. revert 兼顾既可以抛出错误信息又可以抛出相关变量两种优点，优先推荐使用；
 2. require 中的字符串会存储在链上，一方面会消耗更多的 gas，一方面会让合约体积更大，建议结合实际需求选用。
 3. 如有使用 assert 的场景，建议用 revert 进行平替。
+
+## 合约部署与验证
+
+foundry.toml
+
+```
+[rpc_endpoints]
+goerli = "${GOERLI_RPC_URL}"
+sepolia = "${SEPOLIA_RPC_URL}"
+localhost = "http://127.0.0.1:8545"
+
+[etherscan]
+goerli = { key = "${ETHERSCAN_API_KEY}" }
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
+```
+
+### 1.1 部署:
+
+```
+forge script script/NFT.s.sol --rpc-url sepolia --broadcast
+```
+
+### 1.2 验证:
+
+```
+forge verify-contract --chain-id 5 --watch 0xf1425D05bFb4c7Fa33D8aa2289De18676Aa1B4C5 src/Counter.sol:Counter
+
+```
+
+### 2 部署与验证
+
+```
+forge script script/NFT.s.sol --rpc-url sepolia --broadcast --verify -vvvv
+```
