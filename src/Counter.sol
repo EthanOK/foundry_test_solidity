@@ -11,4 +11,8 @@ contract Counter {
     function increment() public {
         number++;
     }
+
+    function bug() external {
+        number = block.number % 100;
+    }
 }

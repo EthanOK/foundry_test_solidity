@@ -11,9 +11,9 @@
     "localhost chain": "anvil --block-time 10",
     "test": "forge test --gas-report",
     "test/YgmeStaking": "forge test --match-path test/YgmeStaking.t.sol -vvvv",
-    "slither": "slither src/YgmeStaking.sol",
-    "mythril": "myth analyze src/NFT.sol --solc-json mythril.config.json"
+    "slither": "slither src/BankReen.sol",
+    "mythril": "docker run -v ${PWD}:/tmp mythril/myth analyze /tmp/src/BankReen.sol --solc-json /tmp/mythril.config.json --solv 0.8.18"
   },
-  "author": "python -m pip install --user mythril",
+  "author": "ethan",
   "license": "ISC"
 }

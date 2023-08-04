@@ -33,11 +33,25 @@ solc-select use 0.8.18
 ```
 
 Run Code:
+
 `slither src/NFT.sol`
 
 ### Mythril
 
 (Python 3.6-3.9)
+
+```
+rustup default nightly
+pip3 install mythril
+```
+
+Run Code:
+
+`myth analyze src/BankReen.sol --solc-json mythril.config.json`
+
+Or Docker:(--solc-json /tmp/mythril.config.json 无效)
+
+`docker run -v ${PWD}:/tmp mythril/myth analyze /tmp/src/BankReen.sol --solc-json /tmp/mythril.config.json --solv 0.8.18`
 
 ————————————————————————————————————————————————————————————————————
 
