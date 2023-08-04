@@ -1,5 +1,46 @@
 # foundry_demo
 
+### Foundry Book
+
+https://learnblockchain.cn/docs/foundry/i18n/zh/index.html
+
+## Solidity 静态分析
+
+https://learnblockchain.cn/docs/foundry/i18n/zh/config/static-analyzers.html
+
+### Slither
+
+slither.config.json
+
+```json
+{
+  "filter_paths": "lib",
+  "solc_remaps": [
+    "ds-test/=lib/ds-test/src/",
+    "forge-std/=lib/forge-std/src/",
+    "@openzeppelin/=lib/openzeppelin-contracts/"
+  ]
+}
+```
+
+Prepare:
+
+```
+pip3 install slither-analyzer
+pip3 install solc-select
+solc-select install 0.8.18
+solc-select use 0.8.18
+```
+
+Run Code:
+`slither src/NFT.sol`
+
+### Mythril
+
+(Python 3.6-3.9)
+
+————————————————————————————————————————————————————————————————————
+
 ```
 git clone https://github.com/EthanOK/foundry_demo.git
 ```
@@ -150,4 +191,8 @@ forge verify-contract --chain-id 5 --watch 0xf1425D05bFb4c7Fa33D8aa2289De18676Aa
 
 ```
 forge script script/NFT.s.sol --rpc-url sepolia --broadcast --verify -vvvv
+```
+
+```
+
 ```

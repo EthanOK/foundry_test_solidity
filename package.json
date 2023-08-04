@@ -8,9 +8,12 @@
     "test": "test"
   },
   "scripts": {
+    "localhost chain": "anvil --block-time 10",
     "test": "forge test --gas-report",
-    "test/YgmeStaking": "forge test --match-path test/YgmeStaking.t.sol -vvv"
+    "test/YgmeStaking": "forge test --match-path test/YgmeStaking.t.sol -vvvv",
+    "slither": "slither src/YgmeStaking.sol",
+    "mythril": "myth analyze src/NFT.sol --solc-json mythril.config.json"
   },
-  "author": "",
+  "author": "python -m pip install --user mythril",
   "license": "ISC"
 }

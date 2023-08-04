@@ -10,15 +10,15 @@ contract ErrorTest is Test {
         errorContrat = new Error();
     }
 
-    function testErrorRevert() public {
+    function testFailErrorRevert() public {
         errorContrat.errorRevert();
     }
 
-    function testErrorRequire() public {
+    function testFailErrorRequire() public {
         errorContrat.errorRequire();
     }
 
-    function testErrorAssert() public {
+    function testFailErrorAssert() public {
         errorContrat.errorAssert();
     }
 }
