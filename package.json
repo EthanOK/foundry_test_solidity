@@ -1,0 +1,16 @@
+{
+  "name": "foundry_demo",
+  "version": "1.0.0",
+  "description": "```\r git clone https://github.com/EthanOK/foundry_demo.git\r ```",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "forge test --gas-report",
+    "test/YgmeStaking": "forge test --match-path test/YgmeStaking.t.sol -vvv"
+  },
+  "author": "",
+  "license": "ISC"
+}
