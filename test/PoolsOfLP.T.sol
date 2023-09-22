@@ -113,7 +113,7 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         vm.stopPrank();
     }
 
-    function testStakingLP() external {
+    function testStakingLP_address_1() public {
         // sign inviter
         bytes memory data = abi.encode(
             address(1),
@@ -150,6 +150,36 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         poolsOfLP_1.getPoolFactor();
         poolsOfLP_1.getInviteTotalBenefit(address(this));
         poolsOfLP_1.getStakeTotalBenefit(address(1));
+
+        vm.stopPrank();
+    }
+
+    function testStakingLP_address_2() public {
+        testStakingLP_address_1();
+        // contine address 2
+        address _inviter = address(1);
+        bytes memory data = abi.encode(
+            address(2),
+            _inviter,
+            address(poolsOfLP_1)
+        );
+        bytes32 hash = keccak256(data);
+        hash = toEthSignedMessageHash(hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(110, hash);
+        bytes memory signature = convertToBytesSignature(v, r, s);
+
+        vm.startPrank(address(2));
+
+        poolsOfLP_1.stakingLP(200 * 1e18, _inviter, signature);
+        StakeLPData memory stakeLPData = poolsOfLP_1.getStakeLPData(address(2));
+        console.log(stakeLPData.startBlockNumber, stakeLPData.endBlockNumber);
+
+        vm.roll(301);
+        poolsOfLP_1.getPoolFactor();
+        poolsOfLP_1.getInviteTotalBenefit(address(this));
+        poolsOfLP_1.getInviteTotalBenefit(address(1));
+        poolsOfLP_1.getStakeTotalBenefit(address(1));
+        poolsOfLP_1.getStakeTotalBenefit(address(2));
 
         vm.stopPrank();
     }
