@@ -181,6 +181,15 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         poolsOfLP_1.getStakeTotalBenefit(address(1));
         poolsOfLP_1.getStakeTotalBenefit(address(2));
 
+        poolsOfLP_1.unStakeLP();
+
+        vm.roll(401);
+        poolsOfLP_1.getPoolFactor();
+        poolsOfLP_1.getInviteTotalBenefit(address(this));
+        poolsOfLP_1.getInviteTotalBenefit(address(1));
+        poolsOfLP_1.getStakeTotalBenefit(address(1));
+        poolsOfLP_1.getStakeTotalBenefit(address(2));
+
         vm.stopPrank();
     }
 
