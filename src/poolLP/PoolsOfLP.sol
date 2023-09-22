@@ -28,17 +28,7 @@ interface IYGIOStake {
     ) external pure returns (uint256 numerator, uint256 denominator);
 }
 
-contract PoolsOfLP is Pausable, AccessControl, ReentrancyGuard {
-    using ECDSA for bytes32;
-
-    bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
-    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
-    address public immutable LPTOKEN_YGIO_USDT;
-    address public immutable YGIO_STAKE;
-    address public immutable YGIO;
-    address public constant ZERO_ADDRESS = address(0);
-    uint256 public constant REWARDRATE_BASE = 10_000;
-
+abstract contract PoolsOfLPDomain {
     enum StakeState {
         STAKING,
         UNSTAKE,
@@ -69,6 +59,23 @@ contract PoolsOfLP is Pausable, AccessControl, ReentrancyGuard {
         uint256 endTime,
         StakeState state
     );
+}
+
+contract PoolsOfLP is
+    PoolsOfLPDomain,
+    Pausable,
+    AccessControl,
+    ReentrancyGuard
+{
+    using ECDSA for bytes32;
+
+    bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
+    address public immutable LPTOKEN_YGIO_USDT;
+    address public immutable YGIO_STAKE;
+    address public immutable YGIO;
+    address public constant ZERO_ADDRESS = address(0);
+    uint256 public constant REWARDRATE_BASE = 10_000;
 
     string private poolName;
 
@@ -180,6 +187,10 @@ contract PoolsOfLP is Pausable, AccessControl, ReentrancyGuard {
 
     function getPoolFactor() external view returns (uint256, uint256) {
         return _getPoolFactor();
+    }
+
+    function getMineOwner() external view returns (address) {
+        return mineOwner;
     }
 
     function getTotalStakeLP() external view returns (uint256) {
@@ -428,9 +439,10 @@ contract PoolsOfLP is Pausable, AccessControl, ReentrancyGuard {
         require(invitee != mineOwner, "Mine owner cannot participate");
 
         if (inviters[invitee] == ZERO_ADDRESS) {
-            // Is the inviter valid?
-            require(inviters[inviter] != ZERO_ADDRESS, "Invalid inviter");
-
+            if (inviter != mineOwner) {
+                // Is the inviter valid?
+                require(inviters[inviter] != ZERO_ADDRESS, "Invalid inviter");
+            }
             // Whether the invitee has been invited?
             bytes memory data = abi.encode(invitee, inviter, address(this));
 
@@ -583,7 +595,7 @@ contract PoolsOfLP is Pausable, AccessControl, ReentrancyGuard {
         uint32 rateSum;
 
         for (uint i = 0; i < _number; i++) {
-            rateSum += rewardRates[0];
+            rateSum += rewardRates[i];
         }
 
         _amountLPWorking = _amountLP - (_amountLP * rateSum) / REWARDRATE_BASE;
@@ -637,7 +649,7 @@ contract PoolsOfLP is Pausable, AccessControl, ReentrancyGuard {
 
             _inviters[i + 1] = _invitee;
 
-            _number = i + 1;
+            _number += 1;
         }
 
         return (_inviters, _number);

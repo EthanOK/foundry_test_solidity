@@ -7,7 +7,7 @@ import "../src/poolLP/YGIOStaking.sol";
 import "../src/poolLP/LPToken.sol";
 import "../src/poolLP/PoolsOfLP.sol";
 
-contract PoolsOfLPTest is Test {
+contract PoolsOfLPTest is Test, PoolsOfLPDomain {
     YGIO ygio;
     YGIOStaking ygioStake;
     LPToken lp;
@@ -73,7 +73,7 @@ contract PoolsOfLPTest is Test {
         lp.approve(address(poolsOfLP_1), banlence5);
         vm.stopPrank();
 
-        //
+        // sign inviter mine owner
         bytes memory data = abi.encode(address(this), address(poolsOfLP_1));
         bytes32 hash = keccak256(data);
         hash = toEthSignedMessageHash(hash);
@@ -92,7 +92,66 @@ contract PoolsOfLPTest is Test {
         assertEq(ygioStake.accountStakingTotal(), 5);
         (uint256 n, uint256 d) = ygioStake.getMulFactor(address(1));
         console.log(n, d);
-        console.log(signer);
+    }
+
+    function testFailBecomeMineOwner() external {
+        vm.startPrank(address(1));
+
+        bytes memory data = abi.encode(address(1), address(poolsOfLP_1));
+        bytes32 hash = keccak256(data);
+        hash = toEthSignedMessageHash(hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(110, hash);
+        bytes memory signature = convertToBytesSignature(v, r, s);
+
+        address recover = ecrecover(hash, v, r, s);
+        assertEq(recover, signer);
+
+        lp.approve(address(poolsOfLP_1), lp.balanceOf(address(1)));
+
+        poolsOfLP_1.becomeMineOwner(signature);
+
+        vm.stopPrank();
+    }
+
+    function testStakingLP() external {
+        // sign inviter
+        bytes memory data = abi.encode(
+            address(1),
+            address(this),
+            address(poolsOfLP_1)
+        );
+        bytes32 hash = keccak256(data);
+        hash = toEthSignedMessageHash(hash);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(110, hash);
+        bytes memory signature = convertToBytesSignature(v, r, s);
+
+        vm.startPrank(address(1));
+        address _inviter = poolsOfLP_1.getMineOwner();
+        poolsOfLP_1.stakingLP(100 * 1e18, _inviter, signature);
+        StakeLPData memory stakeLPData = poolsOfLP_1.getStakeLPData(address(1));
+        console.log(stakeLPData.startBlockNumber, stakeLPData.endBlockNumber);
+
+        vm.roll(101);
+        poolsOfLP_1.getPoolFactor();
+        poolsOfLP_1.getInviteTotalBenefit(address(this));
+        poolsOfLP_1.getStakeTotalBenefit(address(1));
+
+        poolsOfLP_1.stakingLP(200 * 1e18, _inviter, signature);
+
+        StakeLPData memory stakeLPData_2 = poolsOfLP_1.getStakeLPData(
+            address(1)
+        );
+        console.log(
+            stakeLPData_2.startBlockNumber,
+            stakeLPData_2.endBlockNumber
+        );
+
+        vm.roll(201);
+        poolsOfLP_1.getPoolFactor();
+        poolsOfLP_1.getInviteTotalBenefit(address(this));
+        poolsOfLP_1.getStakeTotalBenefit(address(1));
+
+        vm.stopPrank();
     }
 
     function convertToBytesSignature(
