@@ -231,51 +231,16 @@ contract PoolsOfLP is
         return (_inviters, _nubmer);
     }
 
-    function withdrawYGIO(
-        uint256 _amount
-    ) external whenNotPaused nonReentrant returns (bool) {
-        address _account = _msgSender();
-
-        uint256 _total = _getTotalBenefit(_account);
-
-        uint256 _remain = _total - amountWithdrawed[_account];
-
-        require(_amount <= _remain, "Insufficient for withdrawal");
-
-        amountWithdrawed[_account] += _amount;
-
-        IERC20(YGIO).transfer(_account, _amount);
-
-        return true;
-    }
-
-    function withdrawLPOnlyMineOwner(
-        uint256 _amount
-    ) external whenNotPaused nonReentrant returns (bool) {
-        address _account = _msgSender();
-
-        require(_account == mineOwner, "Must mineOwner");
-
-        require(_amount <= currentWithdrawLPAmount, "Withdrawal restrictions");
-
-        require(_amount <= balancePoolOwner, "Insufficient balancePoolOwner");
-
-        currentWithdrawLPAmount -= _amount;
-
-        balancePoolOwner -= _amount;
-
-        // transfer LP
-        IPancakePair(LPTOKEN_YGIO_USDT).transfer(_account, _amount);
-
-        return true;
-    }
-
     function getCurrentWithdrawLPAmountOfMineOwner()
-        internal
+        external
         view
         returns (uint256)
     {
         return currentWithdrawLPAmount;
+    }
+
+    function getLastestUpdateTime() external view returns (uint256) {
+        return lastestUpdateTime;
     }
 
     function becomeMineOwner(
@@ -394,10 +359,53 @@ contract PoolsOfLP is
         // update Inviters Reward
         _updateInvitersRewardRemove(_account, _amountLP);
 
+        _updateWithdrawLPAmount(0);
+
         totalStakingLP -= _amountLP;
 
         // transfer LP
         IPancakePair(LPTOKEN_YGIO_USDT).transfer(_account, _amountLP);
+    }
+
+    function withdrawYGIO(
+        uint256 _amount
+    ) external whenNotPaused nonReentrant returns (bool) {
+        address _account = _msgSender();
+
+        uint256 _total = _getTotalBenefit(_account);
+
+        uint256 _remain = _total - amountWithdrawed[_account];
+
+        require(_amount <= _remain, "Insufficient for withdrawal");
+
+        amountWithdrawed[_account] += _amount;
+
+        IERC20(YGIO).transfer(_account, _amount);
+
+        return true;
+    }
+
+    function withdrawLPOnlyMineOwner(
+        uint256 _amount
+    ) external whenNotPaused nonReentrant returns (bool) {
+        address _account = _msgSender();
+
+        require(_account == mineOwner, "Must mineOwner");
+
+        require(_amount <= currentWithdrawLPAmount, "Withdrawal restrictions");
+
+        require(_amount <= balancePoolOwner, "Insufficient balancePoolOwner");
+
+        currentWithdrawLPAmount -= _amount;
+
+        balancePoolOwner -= _amount;
+
+        _updateWithdrawLPAmount(0);
+
+        // transfer LP
+        IPancakePair(LPTOKEN_YGIO_USDT).transfer(_account, _amount);
+
+        return true;
     }
 
     // Return YGIO Reward(MUL Factor)

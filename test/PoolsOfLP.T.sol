@@ -130,13 +130,17 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         poolsOfLP_1.stakingLP(100 * 1e18, _inviter, signature);
         StakeLPData memory stakeLPData = poolsOfLP_1.getStakeLPData(address(1));
         console.log(stakeLPData.startBlockNumber, stakeLPData.endBlockNumber);
-
+        poolsOfLP_1.getLastestUpdateTime();
         vm.roll(101);
+        vm.warp(1 days + 1);
+
         poolsOfLP_1.getPoolFactor();
         poolsOfLP_1.getInviteTotalBenefit(address(this));
         poolsOfLP_1.getStakeTotalBenefit(address(1));
 
         poolsOfLP_1.stakingLP(200 * 1e18, _inviter, signature);
+
+        poolsOfLP_1.getLastestUpdateTime();
 
         StakeLPData memory stakeLPData_2 = poolsOfLP_1.getStakeLPData(
             address(1)
@@ -147,6 +151,8 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         );
 
         vm.roll(201);
+        vm.warp(2 days + 2);
+
         poolsOfLP_1.getPoolFactor();
         poolsOfLP_1.getInviteTotalBenefit(address(this));
         poolsOfLP_1.getStakeTotalBenefit(address(1));
@@ -171,10 +177,13 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         vm.startPrank(address(2));
 
         poolsOfLP_1.stakingLP(200 * 1e18, _inviter, signature);
+        poolsOfLP_1.getLastestUpdateTime();
+
         StakeLPData memory stakeLPData = poolsOfLP_1.getStakeLPData(address(2));
         console.log(stakeLPData.startBlockNumber, stakeLPData.endBlockNumber);
 
         vm.roll(301);
+        vm.warp(3 days + 3);
         poolsOfLP_1.getPoolFactor();
         poolsOfLP_1.getInviteTotalBenefit(address(this));
         poolsOfLP_1.getInviteTotalBenefit(address(1));
@@ -189,8 +198,11 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         poolsOfLP_1.getInviteTotalBenefit(address(1));
         poolsOfLP_1.getStakeTotalBenefit(address(1));
         poolsOfLP_1.getStakeTotalBenefit(address(2));
+        poolsOfLP_1.getTotalBenefit(address(1));
 
         vm.stopPrank();
+
+        poolsOfLP_1.getCurrentWithdrawLPAmountOfMineOwner();
     }
 
     function convertToBytesSignature(
