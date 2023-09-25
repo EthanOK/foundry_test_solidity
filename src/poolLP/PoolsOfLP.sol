@@ -274,7 +274,7 @@ contract PoolsOfLP is
 
         balancePoolOwner = amountMineOwner;
 
-        lastestUpdateTime = _CurrentTimeStampRound();
+        lastestUpdateTime = _currentTimeStampRound();
 
         // transfer LP
         IPancakePair(LPTOKEN_YGIO_USDT).transferFrom(
@@ -418,6 +418,16 @@ contract PoolsOfLP is
         // transfer LP
         IPancakePair(LPTOKEN_YGIO_USDT).transfer(_account, _amount);
 
+        return true;
+    }
+
+    function updateIncrementEveryDay()
+        external
+        whenNotPaused
+        nonReentrant
+        returns (bool)
+    {
+        _updateWithdrawLPAmount(0);
         return true;
     }
 
@@ -718,18 +728,18 @@ contract PoolsOfLP is
                     7 - day_ - i
                 ];
             }
-            
+
             for (uint256 j = 1; j < day_; ++j) {
                 delete weekStakeIncrementVolumes[j];
             }
 
-            lastestUpdateTime = _CurrentTimeStampRound();
+            lastestUpdateTime = _currentTimeStampRound();
 
             weekStakeIncrementVolumes[0] = _amount;
         }
     }
 
-    function _CurrentTimeStampRound() internal view returns (uint128) {
+    function _currentTimeStampRound() internal view returns (uint128) {
         return uint128(((block.timestamp) / ONEDAY) * ONEDAY);
     }
 }
