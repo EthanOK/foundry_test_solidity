@@ -76,6 +76,7 @@ contract PoolsOfLP is
     address public immutable YGIO;
     address public constant ZERO_ADDRESS = address(0);
     uint256 public constant REWARDRATE_BASE = 10_000;
+    uint256 public constant ONEDAY = 1 days;
 
     string private poolName;
 
@@ -273,7 +274,7 @@ contract PoolsOfLP is
 
         balancePoolOwner = amountMineOwner;
 
-        lastestUpdateTime = (uint128(block.timestamp) / 1 days) * 1 days;
+        lastestUpdateTime = _CurrentTimeStampRound();
 
         // transfer LP
         IPancakePair(LPTOKEN_YGIO_USDT).transferFrom(
@@ -705,20 +706,30 @@ contract PoolsOfLP is
     }
 
     function _updateWithdrawLPAmount(uint256 _amount) internal {
-        if (block.timestamp < lastestUpdateTime + oneCycle_Days) {
+        if (block.timestamp < lastestUpdateTime + ONEDAY) {
             weekStakeIncrementVolumes[0] += _amount;
         } else {
-            lastestUpdateTime = uint128(block.timestamp);
-
             currentWithdrawLPAmount += weekStakeIncrementVolumes[0] / 2;
 
-            for (uint i = 0; i < 7; ++i) {
+            uint256 day_ = (block.timestamp - lastestUpdateTime) / ONEDAY;
+
+            for (uint256 i = 0; i <= 7 - day_; ++i) {
                 weekStakeIncrementVolumes[7 - i] = weekStakeIncrementVolumes[
-                    6 - i
+                    7 - day_ - i
                 ];
             }
+            
+            for (uint256 j = 1; j < day_; ++j) {
+                delete weekStakeIncrementVolumes[j];
+            }
+
+            lastestUpdateTime = _CurrentTimeStampRound();
 
             weekStakeIncrementVolumes[0] = _amount;
         }
+    }
+
+    function _CurrentTimeStampRound() internal view returns (uint128) {
+        return uint128(((block.timestamp) / ONEDAY) * ONEDAY);
     }
 }
