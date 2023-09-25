@@ -131,6 +131,7 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         StakeLPData memory stakeLPData = poolsOfLP_1.getStakeLPData(address(1));
         console.log(stakeLPData.startBlockNumber, stakeLPData.endBlockNumber);
         poolsOfLP_1.getLastestUpdateTime();
+        poolsOfLP_1.stakingLP(300 * 1e18, _inviter, signature);
         vm.roll(101);
         vm.warp(1 days + 1);
 
@@ -176,7 +177,7 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
 
         vm.startPrank(address(2));
 
-        poolsOfLP_1.stakingLP(200 * 1e18, _inviter, signature);
+        poolsOfLP_1.stakingLP(300 * 1e18, _inviter, signature);
         poolsOfLP_1.getLastestUpdateTime();
 
         StakeLPData memory stakeLPData = poolsOfLP_1.getStakeLPData(address(2));
@@ -193,6 +194,8 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         poolsOfLP_1.unStakeLP();
 
         vm.roll(401);
+
+        poolsOfLP_1.stakingLP(50 * 1e18, _inviter, signature);
         poolsOfLP_1.getPoolFactor();
         poolsOfLP_1.getInviteTotalBenefit(address(this));
         poolsOfLP_1.getInviteTotalBenefit(address(1));
@@ -203,6 +206,8 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         vm.stopPrank();
 
         poolsOfLP_1.getCurrentWithdrawLPAmountOfMineOwner();
+
+        poolsOfLP_1.getStakeIncrementVolumesInweek();
     }
 
     function convertToBytesSignature(

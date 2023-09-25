@@ -120,6 +120,10 @@ contract PoolsOfLP is
     // lastest Update Time Of Withdraw LP Amount
     uint128 private lastestUpdateTime;
 
+    // one week Stake Increment Amounts
+    // weekStakeIncrementVolumes[0] : cureent Staking Volume In days
+    uint256[8] private weekStakeIncrementVolumes;
+
     // invitee =>  inviter
     mapping(address => address) private inviters;
 
@@ -213,6 +217,14 @@ contract PoolsOfLP is
         return _getStakeTotalBenefit(_account);
     }
 
+    function getStakeIncrementVolumesInweek()
+        external
+        view
+        returns (uint256[8] memory)
+    {
+        return weekStakeIncrementVolumes;
+    }
+
     function getStakeLPData(
         address _account
     ) external view returns (StakeLPData memory) {
@@ -261,7 +273,7 @@ contract PoolsOfLP is
 
         balancePoolOwner = amountMineOwner;
 
-        lastestUpdateTime = uint128(block.timestamp);
+        lastestUpdateTime = (uint128(block.timestamp) / 1 days) * 1 days;
 
         // transfer LP
         IPancakePair(LPTOKEN_YGIO_USDT).transferFrom(
@@ -694,13 +706,19 @@ contract PoolsOfLP is
 
     function _updateWithdrawLPAmount(uint256 _amount) internal {
         if (block.timestamp < lastestUpdateTime + oneCycle_Days) {
-            StakingVolumeInOneCycle += _amount;
+            weekStakeIncrementVolumes[0] += _amount;
         } else {
             lastestUpdateTime = uint128(block.timestamp);
 
-            currentWithdrawLPAmount += StakingVolumeInOneCycle / 2;
+            currentWithdrawLPAmount += weekStakeIncrementVolumes[0] / 2;
 
-            StakingVolumeInOneCycle = _amount;
+            for (uint i = 0; i < 7; ++i) {
+                weekStakeIncrementVolumes[7 - i] = weekStakeIncrementVolumes[
+                    6 - i
+                ];
+            }
+
+            weekStakeIncrementVolumes[0] = _amount;
         }
     }
 }
