@@ -96,7 +96,21 @@ sepolia = { key = "${ETHERSCAN_API_KEY}" }
 forge script script/NFT.s.sol --rpc-url sepolia --broadcast
 ```
 
-### 1.2 验证:
+### 1.2 测试
+
+(1) 将在名称中带有 testStakingLP_address_2 的 PoolsOfLPTest 测试合约中运行测试
+
+```
+forge test --match-contract PoolsOfLPTest --match-test testStakingLP_address_2 -vvv --gas-report
+```
+
+(2) 运行路径为`test/PoolsOfLP.T.sol`的测试合约
+
+```
+forge test --match-path test/PoolsOfLP.T.sol -vvvv --gas-report
+```
+
+### 1.3 验证:
 
 ```
 forge verify-contract --chain-id 5 --watch 0xf1425D05bFb4c7Fa33D8aa2289De18676Aa1B4C5 src/Counter.sol:Counter

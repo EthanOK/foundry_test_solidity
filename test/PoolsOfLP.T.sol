@@ -194,7 +194,7 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         poolsOfLP_1.unStakeLP();
 
         vm.roll(401);
-        vm.warp(4 days + 5);
+        vm.warp(14 days + 5);
         poolsOfLP_1.stakingLP(50 * 1e18, _inviter, signature);
         poolsOfLP_1.getPoolFactor();
         poolsOfLP_1.getInviteTotalBenefit(address(this));
