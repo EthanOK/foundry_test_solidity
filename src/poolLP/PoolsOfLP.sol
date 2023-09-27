@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
+
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
@@ -58,6 +59,13 @@ abstract contract PoolsOfLPDomain {
         uint256 endBlock,
         uint256 countStakeLP,
         StakeState state
+    );
+
+    event Withdraw(
+        address indexed token,
+        address indexed account,
+        uint256 amount,
+        uint256 blockNumber
     );
 }
 
@@ -525,6 +533,8 @@ contract PoolsOfLP is
             amountWithdrawed[_account] += _amount;
 
             IERC20(YGIO).transfer(_account, _amount);
+
+            emit Withdraw(YGIO, _account, _amount, block.number);
         }
 
         return true;
@@ -549,6 +559,8 @@ contract PoolsOfLP is
 
         // transfer LP
         IPancakePair(LPTOKEN_YGIO_USDT).transfer(_account, _amount);
+
+        emit Withdraw(LPTOKEN_YGIO_USDT, _account, _amount, block.number);
 
         return true;
     }
