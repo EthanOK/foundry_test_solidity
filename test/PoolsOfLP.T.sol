@@ -191,12 +191,12 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         poolsOfLP_1.getStakeTotalBenefit(address(1));
         poolsOfLP_1.getStakeTotalBenefit(address(2));
 
-        poolsOfLP_1.unStakeLP2(100 * 1e18);
+        poolsOfLP_1.unStakeLP(100 * 1e18);
 
         vm.roll(401);
         vm.warp(5 days + 5);
 
-        poolsOfLP_1.unStakeLP2(120 * 1e18);
+        poolsOfLP_1.unStakeLP(120 * 1e18);
 
         poolsOfLP_1.stakingLP(50 * 1e18, _inviter, signature);
         poolsOfLP_1.getPoolFactor();
@@ -208,7 +208,7 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
 
         vm.roll(501);
         vm.warp(6 days + 6);
-        poolsOfLP_1.unStakeLP();
+        poolsOfLP_1.unStakeLPAll();
 
         vm.stopPrank();
 
