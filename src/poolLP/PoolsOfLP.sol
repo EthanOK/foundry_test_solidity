@@ -375,7 +375,7 @@ contract PoolsOfLP is
         );
     }
 
-    function unStakeLP2(
+    function unStakeLP(
         uint256 _amountRemove
     ) external whenNotPaused nonReentrant returns (bool) {
         address _account = _msgSender();
@@ -443,7 +443,7 @@ contract PoolsOfLP is
         return true;
     }
 
-    function unStakeLP() external whenNotPaused nonReentrant returns (bool) {
+    function unStakeLPAll() external whenNotPaused nonReentrant returns (bool) {
         address _account = _msgSender();
 
         StakeLPData storage _stakeLPData = stakeLPDatas[_account];
@@ -572,6 +572,7 @@ contract PoolsOfLP is
         returns (bool)
     {
         _updateWithdrawLPAmount(0);
+
         return true;
     }
 
