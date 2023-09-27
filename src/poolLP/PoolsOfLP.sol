@@ -914,6 +914,7 @@ contract PoolsOfLP is
         }
     }
 
+    // UTC
     function _currentTimeStampRound()
         internal
         view
