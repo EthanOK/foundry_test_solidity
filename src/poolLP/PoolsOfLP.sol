@@ -367,7 +367,7 @@ contract PoolsOfLP is
         );
     }
 
-    function unStakeLP() external whenNotPaused nonReentrant {
+    function unStakeLP() external whenNotPaused nonReentrant returns (bool) {
         address _account = _msgSender();
 
         StakeLPData storage _stakeLPData = stakeLPDatas[_account];
@@ -415,6 +415,8 @@ contract PoolsOfLP is
             countStakeLP,
             StakeState.UNSTAKE
         );
+
+        return true;
     }
 
     function withdrawYGIO(
