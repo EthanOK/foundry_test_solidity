@@ -191,10 +191,13 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         poolsOfLP_1.getStakeTotalBenefit(address(1));
         poolsOfLP_1.getStakeTotalBenefit(address(2));
 
-        poolsOfLP_1.unStakeLP();
+        poolsOfLP_1.unStakeLP2(100 * 1e18);
 
         vm.roll(401);
-        vm.warp(14 days + 5);
+        vm.warp(7 days + 5);
+
+        poolsOfLP_1.unStakeLP2(120 * 1e18);
+
         poolsOfLP_1.stakingLP(50 * 1e18, _inviter, signature);
         poolsOfLP_1.getPoolFactor();
         poolsOfLP_1.getInviteTotalBenefit(address(this));
@@ -208,6 +211,9 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         poolsOfLP_1.getCurrentWithdrawLPAmountOfMineOwner();
 
         poolsOfLP_1.getStakeIncrementVolumesInweek();
+
+        poolsOfLP_1.getStakeLPData(address(1));
+        poolsOfLP_1.getStakeLPData(address(2));
     }
 
     function convertToBytesSignature(

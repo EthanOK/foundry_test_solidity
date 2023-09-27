@@ -367,6 +367,74 @@ contract PoolsOfLP is
         );
     }
 
+    function unStakeLP2(
+        uint256 _amountRemove
+    ) external whenNotPaused nonReentrant returns (bool) {
+        address _account = _msgSender();
+
+        StakeLPData storage _stakeLPData = stakeLPDatas[_account];
+
+        require(
+            _amountRemove <= _stakeLPData.amountLP &&
+                _amountRemove <= totalStakingLP,
+            "Invalid _amountRemove"
+        );
+
+        uint256 _amountLPWorkingRemove = _getAmountLPWorking(
+            _account,
+            _amountRemove
+        );
+
+        require(
+            _amountLPWorkingRemove <= _stakeLPData.amountLPWorking,
+            "Insufficient _amountLPWorking"
+        );
+
+        uint256 _currentStakingReward = _caculateLPWorkingReward(
+            _account,
+            _stakeLPData.amountLPWorking,
+            _stakeLPData.startBlockNumber,
+            uint128(block.number)
+        );
+
+        unchecked {
+            _stakeLPData.accruedIncomeYGIO += _currentStakingReward;
+
+            _stakeLPData.amountLPWorking -= _amountLPWorkingRemove;
+
+            _stakeLPData.amountLP -= _amountRemove;
+
+            totalStakingLP -= _amountRemove;
+
+            ++countStakeLP;
+        }
+
+        _stakeLPData.endBlockNumber = uint128(block.number);
+
+        if (_stakeLPData.amountLP > 0) {
+            _stakeLPData.startBlockNumber = uint128(block.number);
+        }
+
+        // update Inviters Reward
+        _updateInvitersRewardRemove(_account, _amountRemove);
+
+        _updateWithdrawLPAmount(0);
+
+        // transfer LP
+        IPancakePair(LPTOKEN_YGIO_USDT).transfer(_account, _amountRemove);
+
+        emit StakeLP(
+            _account,
+            _amountRemove,
+            _stakeLPData.startBlockNumber,
+            _stakeLPData.endBlockNumber,
+            countStakeLP,
+            StakeState.UNSTAKE
+        );
+
+        return true;
+    }
+
     function unStakeLP() external whenNotPaused nonReentrant returns (bool) {
         address _account = _msgSender();
 

@@ -101,7 +101,7 @@ forge script script/NFT.s.sol --rpc-url sepolia --broadcast
 (1) 将在名称中带有 testStakingLP_address_2 的 PoolsOfLPTest 测试合约中运行测试
 
 ```
-forge test --match-contract PoolsOfLPTest --match-test testStakingLP_address_2 -vvv --gas-report
+forge test --match-contract PoolsOfLPTest --match-test testStakingLP_address_2 -vvvv --gas-report
 ```
 
 (2) 运行路径为`test/PoolsOfLP.T.sol`的测试合约
