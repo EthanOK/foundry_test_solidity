@@ -396,10 +396,25 @@ contract PoolsOfLP is
 
         _updateWithdrawLPAmount(0);
 
-        totalStakingLP -= _amountLP;
+        require(_amountLP <= totalStakingLP, "unStake Fail");
+
+        unchecked {
+            totalStakingLP -= _amountLP;
+
+            ++countStakeLP;
+        }
 
         // transfer LP
         IPancakePair(LPTOKEN_YGIO_USDT).transfer(_account, _amountLP);
+
+        emit StakeLP(
+            _account,
+            _amountLP,
+            _stakeLPData.startBlockNumber,
+            _stakeLPData.endBlockNumber,
+            countStakeLP,
+            StakeState.UNSTAKE
+        );
     }
 
     function withdrawYGIO(
