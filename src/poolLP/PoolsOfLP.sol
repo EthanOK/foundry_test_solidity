@@ -82,6 +82,7 @@ contract PoolsOfLP is
     address public constant ZERO_ADDRESS = address(0);
     uint256 public constant REWARDRATE_BASE = 10_000;
     uint256 public constant ONEDAY = 1 days;
+    uint256 public constant E_18 = 1e18;
 
     address public immutable LPTOKEN_YGIO_USDT;
     address public immutable YGIO_STAKE;
@@ -95,7 +96,8 @@ contract PoolsOfLP is
     uint32 private oneCycle_BlockNumber = 1;
 
     // one Cycle YGIO Reward Per LP
-    uint256 private oneCycle_Reward = 10_000_000;
+    // LP => YGIO : 1e18 => 1e15
+    uint256 private oneCycle_Reward = 1e15;
 
     // Mine Owner
     address private mineOwner;
@@ -146,7 +148,7 @@ contract PoolsOfLP is
     mapping(address => InviterLPData) private inviterLPDatas;
 
     //address withdrawed YGIO SUM
-    mapping(address => uint256) amountWithdrawed;
+    mapping(address => uint256) private amountWithdrawed;
 
     // TODO:_amount = 100_000 LP
     constructor(
@@ -221,6 +223,12 @@ contract PoolsOfLP is
 
     function getTotalBenefit(address _account) external view returns (uint256) {
         return _getTotalBenefit(_account);
+    }
+
+    function getAmountWithdrawedYGIO(
+        address _account
+    ) external view returns (uint256) {
+        return amountWithdrawed[_account];
     }
 
     function getStakeTotalBenefit(
@@ -584,18 +592,20 @@ contract PoolsOfLP is
         uint128 _endBlockNumber
     ) internal view returns (uint256) {
         // working Cycle Number
-        uint256 cycleNumber;
+        uint256 _cycleNumber;
 
         unchecked {
-            cycleNumber =
+            _cycleNumber =
                 (_endBlockNumber - _startBlockNumber) /
                 oneCycle_BlockNumber;
         }
 
-        if (cycleNumber == 0) {
+        if (_cycleNumber == 0) {
             return 0;
         } else {
-            uint256 _reward = cycleNumber * oneCycle_Reward * _amountLPWorking;
+            uint256 _reward = (_cycleNumber *
+                oneCycle_Reward *
+                _amountLPWorking) / E_18;
 
             // account Factor
             (uint256 _numerator, uint256 _denominator) = IYGIOStake(YGIO_STAKE)
@@ -723,14 +733,13 @@ contract PoolsOfLP is
     function _caculateInviterRewardYGIO(
         uint256 _amountLPWorking,
         uint256 _startBlockNumber
-    ) internal view returns (uint256) {
-        uint256 _rewardOneBlockOneLP = oneCycle_Reward / oneCycle_BlockNumber;
+    ) internal view returns (uint256 _inviterRewardYGIO) {
+        uint256 _cycleNumber = (block.number - _startBlockNumber) /
+            oneCycle_BlockNumber;
 
-        uint256 _inviterRewardYGIO = _rewardOneBlockOneLP *
-            _amountLPWorking *
-            (uint128(block.number - _startBlockNumber));
-
-        return _inviterRewardYGIO;
+        _inviterRewardYGIO =
+            (_cycleNumber * oneCycle_Reward * _amountLPWorking) /
+            E_18;
     }
 
     function _updateInvitersRewardRemove(

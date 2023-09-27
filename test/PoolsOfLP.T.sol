@@ -43,6 +43,8 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
             address(lp)
         );
 
+        ygio.mint(address(poolsOfLP_1), 50000000000 * 1e18);
+
         vm.startPrank(address(1));
         ygio.approve(address(ygioStake), banlence1);
         ygioStake.stakingYGIO(banlence1, 30);
@@ -203,8 +205,17 @@ contract PoolsOfLPTest is Test, PoolsOfLPDomain {
         poolsOfLP_1.getInviteTotalBenefit(address(this));
         poolsOfLP_1.getInviteTotalBenefit(address(1));
         poolsOfLP_1.getStakeTotalBenefit(address(1));
-        poolsOfLP_1.getStakeTotalBenefit(address(2));
+        uint256 stakeTotalBenefit = poolsOfLP_1.getStakeTotalBenefit(
+            address(2)
+        );
         poolsOfLP_1.getTotalBenefit(address(1));
+
+        poolsOfLP_1.withdrawYGIO(stakeTotalBenefit / 2);
+
+        assertEq(
+            poolsOfLP_1.getAmountWithdrawedYGIO(address(2)),
+            stakeTotalBenefit / 2
+        );
 
         vm.roll(501);
         vm.warp(6 days + 6);
