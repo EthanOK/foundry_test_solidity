@@ -129,4 +129,4 @@ forge script script/NFT.s.sol --rpc-url sepolia --broadcast --verify -vvvv
 
 # 查看智能合约 storage 布局
 
-`forge inspect --pretty YGIO storage`
+`forge inspect --pretty src/YGIO.sol:YGIO storage`
