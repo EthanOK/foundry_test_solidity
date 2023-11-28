@@ -1,4 +1,4 @@
-# foundry_demo
+# foundry_test_solidity
 
 ### Foundry Book
 
