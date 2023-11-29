@@ -10,7 +10,7 @@
   "scripts": {
     "localhost chain": "anvil --block-time 10",
     "test": "forge test --gas-report",
-    "test/YgmeStaking": "forge test --match-path test/YgmeStaking.T.sol -vvvv --gas-report",
+    "test/YgmeStaking": "forge test --match-contract YgmeStakingTest -vvvv --gas-report",
     "test/YGIO": "forge test --match-path test/YGIO.T.sol -vvvv --gas-report",
     "test/PoolsOfLP": "forge test --match-path test/PoolsOfLP.T.sol -vvvv --gas-report",
     "slither": "slither src/BankReen.sol",
