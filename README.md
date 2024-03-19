@@ -130,3 +130,11 @@ forge script script/NFT.s.sol --rpc-url sepolia --broadcast --verify -vvvv
 # 查看智能合约 storage 布局
 
 `forge inspect --pretty src/YGIO.sol:YGIO storage`
+
+# 获取合约的 `Standard Json Input`
+
+`forge verify-contract [OPTIONS] <ADDRESS> <CONTRACT>`
+
+```
+forge verify-contract --show-standard-json-input 0x0000000000000000000000000000000000000000 src/YGIO.sol:YGIO
+```
