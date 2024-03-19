@@ -10,8 +10,8 @@ contract MyScript is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        NFT nft = new NFT("TUT", "TUT");
-        console2.log("NFT deployed on %s", address(nft));
+        // NFT nft = new NFT("TUT", "TUT");
+        // console2.log("NFT deployed on %s", address(nft));
 
         vm.stopBroadcast();
     }
