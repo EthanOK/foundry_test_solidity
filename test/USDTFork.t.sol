@@ -12,8 +12,8 @@ contract USDTForkTest is Test {
     address bob = address(0x22);
 
     function setUp() external {
-        // 配置 fork url
-        uint256 forkId = vm.createFork("https://rpc.ankr.com/eth");
+        // 配置 fork url; ETH_RPC_URL 为 .env 文件中的环境变量
+        uint256 forkId = vm.createFork(vm.envString("ETH_RPC_URL"));
         vm.selectFork(forkId);
 
         alice = address(0x11);
@@ -29,8 +29,8 @@ contract USDTForkTest is Test {
 
     function testTransfer() external {
         vm.startPrank(alice);
-        usdt.safeTransfer(bob, 20);
-        assertEq(usdt.balanceOf(bob), 20);
+        usdt.safeTransfer(bob, 20e6);
+        assertEq(usdt.balanceOf(bob), 20e6);
         vm.stopPrank();
     }
 }

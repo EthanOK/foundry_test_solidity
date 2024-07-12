@@ -1,0 +1,17 @@
+{
+  "accounts": [
+    {
+      "account": "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf",
+      "amount": 1000000
+    },
+    {
+      "account": "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf",
+      "amount": 200000000
+    },
+    {
+      "account": "0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf",
+      "amount": 500000000
+    }
+  ],
+  "name": "Account Table"
+}
