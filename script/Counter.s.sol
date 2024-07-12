@@ -9,8 +9,9 @@ contract CounterScript is Script {
 
     function run() external {
         // LOCAL_PRIVATE_KEY PRIVATE_KEY
-        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        uint256 deployerPrivateKey = vm.envUint("LOCAL_PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
+        // vm.startBroadcast();
 
         Counter c = new Counter();
         console2.log("Counter deployed on %s", address(c));

@@ -3,6 +3,9 @@ pragma solidity ^0.8.13;
 
 contract Error {
     error NotOwner();
+    error InvalidSignature();
+    error InvalidInput();
+    error InvalidState();
 
     function errorRevert() external pure {
         if (true) revert NotOwner();
