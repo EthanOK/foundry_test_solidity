@@ -119,12 +119,10 @@ forge verify-contract --chain-id 5 --watch 0xf1425D05bFb4c7Fa33D8aa2289De18676Aa
 
 ### 2 部署与验证
 
-```
-forge script script/NFT.s.sol --rpc-url sepolia --broadcast --verify -vvvv
-```
+`--broadcast --verify`
 
 ```
-
+forge script --broadcast --verify script/NFT.s.sol --rpc-url sepolia -vvvv
 ```
 
 # 查看智能合约 storage 布局
